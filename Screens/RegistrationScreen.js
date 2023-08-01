@@ -21,12 +21,19 @@ const initialState = {
 };
 const d = Dimensions.get("window");
 export default function RegistrationScreen() {
-  // const d = Dimensions.get("window");
-
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
-  const [state, setstate] = useState(initialState);
+  const [dataFormRegistration, setDataFormRegistration] =
+    useState(initialState);
   const [isSecureEntry, setIsSecureEntry] = useState(true);
   const [dimensions, setdimensions] = useState(Dimensions.get("window").width);
+  const [marginAdapt, setMarginAdapt] = useState(0);
+
+  const keyboardShowListener = Keyboard.addListener("keyboardDidShow", () => {
+    setMarginAdapt(-160);
+  });
+  const keyboardHideListener = Keyboard.addListener("keyboardDidHide", () => {
+    setMarginAdapt(0);
+  });
 
   useEffect(() => {
     const onChange = () => {
@@ -42,10 +49,14 @@ export default function RegistrationScreen() {
   const keyboardHide = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
-
-    setstate(initialState);
+    // console.log(dataFormRegistration);
+    setDataFormRegistration(initialState);
   };
-
+  const submitRegisterForm = () => {
+    Keyboard.dismiss();
+    console.log(dataFormRegistration);
+    setDataFormRegistration(initialState);
+  };
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <View style={styles.container}>
@@ -55,23 +66,19 @@ export default function RegistrationScreen() {
         >
           <KeyboardAvoidingView
             behavior={Platform.OS == "ios" ? "padding" : ""}
-            // keyboardVerticalOffset={Platform.select({
-            //   ios: () => 0,
-            //   android: () => -100,
-            // })}
           >
             <View
               style={{
                 ...styles.form,
                 width: dimensions,
 
-                // marginBottom: isShowKeyboard === true ? -160 : 0,
+                marginBottom: marginAdapt,
               }}
             >
               <View style={styles.avatarBox}>
                 <TouchableOpacity
                   style={styles.buttonAddAvatar}
-                  activeOpacity={0.9}
+                  activeOpacity={0.8}
                 >
                   <Image
                     source={require("../assets/images/add.png")}
@@ -88,23 +95,29 @@ export default function RegistrationScreen() {
                   name="hola"
                   textAlign={"left"}
                   onFocus={() => setIsShowKeyboard(true)}
-                  value={state.username}
+                  value={dataFormRegistration.username}
                   placeholder={"Логін"}
-                  onChange={(nativeEvent) => console.log("Hi")}
+                  // onChange={(nativeEvent) => console.log("Hi")}
                   onChangeText={(value) =>
-                    setstate((prevState) => ({ ...prevState, username: value }))
+                    setDataFormRegistration((prevState) => ({
+                      ...prevState,
+                      username: value,
+                    }))
                   }
                 />
               </View>
-              <View style={{ marginTop: 15 }}>
+              <View style={{ marginTop: 16 }}>
                 <TextInput
                   style={styles.input}
                   textAlign={"left"}
                   onFocus={() => setIsShowKeyboard(true)}
-                  value={state.email}
-                  placeholder={"Адрес електроної почти"}
+                  value={dataFormRegistration.email}
+                  placeholder={"Адреса електронної пошти"}
                   onChangeText={(value) =>
-                    setstate((prevState) => ({ ...prevState, email: value }))
+                    setDataFormRegistration((prevState) => ({
+                      ...prevState,
+                      email: value,
+                    }))
                   }
                 />
               </View>
@@ -114,29 +127,21 @@ export default function RegistrationScreen() {
                   textAlign={"left"}
                   secureTextEntry={isSecureEntry}
                   onFocus={() => setIsShowKeyboard(true)}
-                  // icon={
-                  //   <TouchableOpacity
-                  //     onPress={() => {
-                  //       setIsSecureEntry((prev) => !prev);
-                  //     }}
-                  //   >
-                  //     <Text style={styles.passwordCheck}>
-                  //       {isSecureEntry ? "Показати" : "Сховати"}
-                  //     </Text>
-                  //   </TouchableOpacity>
-                  // }
-                  // iconPosition="right"
-                  value={state.password}
+                  value={dataFormRegistration.password}
                   placeholder={"Пароль"}
                   onChangeText={(value) =>
-                    setstate((prevState) => ({ ...prevState, password: value }))
+                    setDataFormRegistration((prevState) => ({
+                      ...prevState,
+                      password: value,
+                    }))
                   }
                 />
               </View>
               <TouchableOpacity
                 activeOpacity={0.8}
                 style={styles.btn}
-                onPress={keyboardHide}
+                // onPress={keyboardHide}
+                onPress={submitRegisterForm}
               >
                 <Text style={styles.btnTitle}>Зареєструватися</Text>
               </TouchableOpacity>
@@ -144,36 +149,6 @@ export default function RegistrationScreen() {
               <View style={styles.boxAdvice}>
                 <Text style={styles.headerAdvice}>Вже є акаунт? Увійти</Text>
               </View>
-
-              {/* 
-            {!isShowKeyboard && (
-              <TouchableOpacity
-                activeOpacity={0.8}
-                style={styles.btn}
-                onPress={keyboardHide}
-              >
-                <Text style={styles.btnTitle}>Зареєструватися</Text>
-              </TouchableOpacity>
-            )}
-            {!isShowKeyboard && (
-              <View style={styles.boxAdvice}>
-                <Text style={styles.headerAdvice}>Вже є акаунт? Увійти</Text>
-              </View>
-            )}
-            {!isShowKeyboard && (
-              <TouchableOpacity
-                activeOpacity={0.8}
-                style={styles.btn}
-                onPress={keyboardHide}
-              >
-                <Text style={styles.btnTitle}>Зареєструватися</Text>
-              </TouchableOpacity>
-            )}
-            {!isShowKeyboard && (
-              <View style={styles.boxAdvice}>
-                <Text style={styles.headerAdvice}>Вже є акаунт? Увійти</Text>
-              </View>
-            )} */}
             </View>
           </KeyboardAvoidingView>
         </ImageBackground>
@@ -191,12 +166,14 @@ const styles = StyleSheet.create({
     flex: 1,
     resizeMode: "cover",
     justifyContent: "flex-end",
-    alignItems: "center",
-    position: "absolute",
-    backgroundColor: "rgba(0,0,0,0.45)",
-    // zIndex: 9998,
+
+    // position: "absolute",
+    backgroundColor: "#fff",
+
     width: d.width,
     height: d.height,
+    // zIndex: 9998,
+    // alignItems: "center",
   },
   form: {
     borderTopLeftWidth: 1,
@@ -206,7 +183,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     height: 549,
 
-    // marginBottom: 99,
+    marginBottom: 0,
     // alignItems: "center",
   },
   input: {
@@ -221,8 +198,6 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
     fontFamily: "Roboto-Regular",
     fontSize: 16,
-    // lineHeight: 1.19,
-    // letterSpacing: 0,
   },
 
   avatarBox: {

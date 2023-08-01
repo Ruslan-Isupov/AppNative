@@ -17,14 +17,26 @@ const initialState = {
   email: "",
   password: "",
 };
-
+const d = Dimensions.get("window");
 export default function LoginScreen() {
-  console.log(Platform.OS);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
-  const [state, setstate] = useState(initialState);
+  const [dataFormLogin, setDataFormLogin] = useState(initialState);
 
   const [dimensions, setdimensions] = useState(Dimensions.get("window").width);
+  const [marginAdapt, setMarginAdapt] = useState(0);
 
+  const submitLoginForm = () => {
+    Keyboard.dismiss();
+    console.log(dataFormLogin);
+    setDataFormLogin(initialState);
+  };
+
+  const keyboardShowListener = Keyboard.addListener("keyboardDidShow", () => {
+    setMarginAdapt(-225);
+  });
+  const keyboardHideListener = Keyboard.addListener("keyboardDidHide", () => {
+    setMarginAdapt(0);
+  });
   useEffect(() => {
     const onChange = () => {
       const width = Dimensions.get("window").width - 20 * 2;
@@ -39,7 +51,8 @@ export default function LoginScreen() {
   const keyboardHide = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
-    setstate(initialState);
+    // console.log(dataFormLogin);
+    setDataFormLogin(initialState);
   };
 
   return (
@@ -50,13 +63,14 @@ export default function LoginScreen() {
           source={require("../assets/images/bG.png")}
         >
           <KeyboardAvoidingView
-            behavior={Platform.OS == "ios" ? "padding" : "height"}
+            behavior={Platform.OS == "ios" ? "padding" : ""}
           >
             <View
               style={{
                 ...styles.form,
-                // marginBottom: isShowKeyboard ? 20 : 150,
                 width: dimensions,
+                // marginBottom: isShowKeyboard === true ? -225 : 0,
+                marginBottom: marginAdapt,
               }}
             >
               <View style={styles.header}>
@@ -68,11 +82,14 @@ export default function LoginScreen() {
                   name="hola"
                   textAlign={"left"}
                   onFocus={() => setIsShowKeyboard(true)}
-                  value={state.email}
+                  value={dataFormLogin.email}
                   placeholder={"Адрес електроної почти"}
-                  onChange={(nativeEvent) => console.log(nativeEvent)}
+                  onChange={(nativeEvent) => console.log("LoginScreen")}
                   onChangeText={(value) =>
-                    setstate((prevState) => ({ ...prevState, email: value }))
+                    setDataFormLogin((prevState) => ({
+                      ...prevState,
+                      email: value,
+                    }))
                   }
                 />
               </View>
@@ -82,17 +99,21 @@ export default function LoginScreen() {
                   textAlign={"left"}
                   secureTextEntry={true}
                   onFocus={() => setIsShowKeyboard(true)}
-                  value={state.password}
+                  value={dataFormLogin.password}
                   placeholder={"Пароль"}
                   onChangeText={(value) =>
-                    setstate((prevState) => ({ ...prevState, password: value }))
+                    setDataFormLogin((prevState) => ({
+                      ...prevState,
+                      password: value,
+                    }))
                   }
                 />
               </View>
               <TouchableOpacity
                 activeOpacity={0.8}
                 style={styles.btn}
-                onPress={keyboardHide}
+                // onPress={keyboardHide}
+                onPress={submitLoginForm}
               >
                 <Text style={styles.btnTitle}>Увійти</Text>
               </TouchableOpacity>
@@ -118,8 +139,12 @@ const styles = StyleSheet.create({
     flex: 1,
     resizeMode: "cover",
     justifyContent: "flex-end",
+    // position: "absolute",
+    backgroundColor: "#fff",
 
-    alignItems: "center",
+    width: d.width,
+    height: d.height,
+    // alignItems: "center",
   },
 
   form: {
@@ -141,8 +166,6 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
     fontFamily: "Roboto-Regular",
     fontSize: 16,
-    lineHeight: 1.19,
-    letterSpacing: 0,
   },
 
   btn: {
