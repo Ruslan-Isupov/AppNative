@@ -49,8 +49,9 @@ export default function RegistrationScreen() {
   const keyboardHide = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
+
     // console.log(dataFormRegistration);
-    setDataFormRegistration(initialState);
+    // setDataFormRegistration(initialState);
   };
   const submitRegisterForm = () => {
     Keyboard.dismiss();
@@ -121,9 +122,17 @@ export default function RegistrationScreen() {
                   }
                 />
               </View>
-              <View style={{ marginTop: 16 }}>
+              <View
+                style={{
+                  marginTop: 16,
+                }}
+              >
                 <TextInput
-                  style={styles.input}
+                  style={{
+                    ...styles.input,
+                    display: "flex",
+                    alignItems: "center",
+                  }}
                   textAlign={"left"}
                   secureTextEntry={isSecureEntry}
                   onFocus={() => setIsShowKeyboard(true)}
@@ -136,6 +145,24 @@ export default function RegistrationScreen() {
                     }))
                   }
                 />
+                <TouchableOpacity
+                  style={{
+                    position: "absolute",
+                    // top: "50%",
+                    top: 13,
+
+                    right: 32,
+
+                    // transform: [{ translate: "(-50%)" }],
+                  }}
+                  onPress={() => {
+                    setIsSecureEntry((prev) => !prev);
+                  }}
+                >
+                  <Text style={styles.passwordCheck}>
+                    {isSecureEntry ? "Показати" : "Сховати"}
+                  </Text>
+                </TouchableOpacity>
               </View>
               <TouchableOpacity
                 activeOpacity={0.8}
@@ -194,7 +221,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F6F6F6",
     color: "#BDBDBD",
     marginHorizontal: 16,
-
+    // padding: 0,
     paddingLeft: 16,
     fontFamily: "Roboto-Regular",
     fontSize: 16,
@@ -260,6 +287,8 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   passwordCheck: {
-    color: "gray",
+    color: "#1B4371",
+    fontFamily: "Roboto-Regular",
+    fontSize: 16,
   },
 });

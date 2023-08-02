@@ -21,6 +21,7 @@ const d = Dimensions.get("window");
 export default function LoginScreen() {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [dataFormLogin, setDataFormLogin] = useState(initialState);
+  const [isSecureEntry, setIsSecureEntry] = useState(true);
 
   const [dimensions, setdimensions] = useState(Dimensions.get("window").width);
   const [marginAdapt, setMarginAdapt] = useState(0);
@@ -52,7 +53,7 @@ export default function LoginScreen() {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
     // console.log(dataFormLogin);
-    setDataFormLogin(initialState);
+    // setDataFormLogin(initialState);
   };
 
   return (
@@ -84,7 +85,7 @@ export default function LoginScreen() {
                   onFocus={() => setIsShowKeyboard(true)}
                   value={dataFormLogin.email}
                   placeholder={"Адрес електроної почти"}
-                  onChange={(nativeEvent) => console.log("LoginScreen")}
+                  // onChange={(nativeEvent) => console.log("LoginScreen")}
                   onChangeText={(value) =>
                     setDataFormLogin((prevState) => ({
                       ...prevState,
@@ -97,7 +98,7 @@ export default function LoginScreen() {
                 <TextInput
                   style={styles.input}
                   textAlign={"left"}
-                  secureTextEntry={true}
+                  secureTextEntry={isSecureEntry}
                   onFocus={() => setIsShowKeyboard(true)}
                   value={dataFormLogin.password}
                   placeholder={"Пароль"}
@@ -108,6 +109,20 @@ export default function LoginScreen() {
                     }))
                   }
                 />
+                <TouchableOpacity
+                  style={{
+                    position: "absolute",
+                    top: 13,
+                    right: 32,
+                  }}
+                  onPress={() => {
+                    setIsSecureEntry((prev) => !prev);
+                  }}
+                >
+                  <Text style={styles.passwordCheck}>
+                    {isSecureEntry ? "Показати" : "Сховати"}
+                  </Text>
+                </TouchableOpacity>
               </View>
               <TouchableOpacity
                 activeOpacity={0.8}
@@ -212,5 +227,10 @@ const styles = StyleSheet.create({
   boxAdvice: {
     alignItems: "center",
     marginTop: 16,
+  },
+  passwordCheck: {
+    color: "#1B4371",
+    fontFamily: "Roboto-Regular",
+    fontSize: 16,
   },
 });
