@@ -4,8 +4,11 @@ import { View, Text, StyleSheet, Image, FlatList } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { useNavigation } from "@react-navigation/native";
 
 const PostsItem = () => {
+  const navigation = useNavigation();
+
   return (
     <View style={styles.container}>
       <View style={styles.postBox}>
@@ -44,6 +47,9 @@ const PostsItem = () => {
                   fontSize: 16,
                   color: "#212121",
                 }}
+                onPress={() => {
+                  navigation.navigate("CommentScreen");
+                }}
               >
                 0
               </Text>
@@ -74,6 +80,9 @@ const PostsItem = () => {
                 fontSize: 16,
                 color: "#212121",
                 textDecorationLine: "underline",
+              }}
+              onPress={() => {
+                navigation.navigate("MapScreen");
               }}
             >
               {/* Ivano-Frankivs'k Region, */}

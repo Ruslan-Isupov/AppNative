@@ -23,17 +23,18 @@ const initialState = {
 const d = Dimensions.get("window");
 
 const CreatePostsScreen = () => {
-  const [hasPermission, setHasPermission] = useState(null);
-  const [cameraRef, setCameraRef] = useState(null);
-  const [photo, setPhoto] = useState(null);
-  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
-  const [dimensions, setdimensions] = useState(Dimensions.get("window").width);
-  const [marginAdapt, setMarginAdapt] = useState(0);
-  const [dataFormPost, setDataFormPost] = useState(initialState);
-
   const navigation = useNavigation();
 
   // const [type, setType] = useState(Camera.Constants.Type.back);
+  const [hasPermission, setHasPermission] = useState(null);
+  const [cameraRef, setCameraRef] = useState(null);
+  const [photo, setPhoto] = useState(null);
+
+  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const [dimensions, setdimensions] = useState(Dimensions.get("window").width);
+  const [marginAdapt, setMarginAdapt] = useState(0);
+
+  const [dataFormPost, setDataFormPost] = useState(initialState);
 
   useEffect(() => {
     (async () => {
@@ -110,7 +111,6 @@ const CreatePostsScreen = () => {
               onPress={async () => {
                 if (cameraRef) {
                   const { uri } = await cameraRef.takePictureAsync();
-                  console.log(uri);
                   await MediaLibrary.createAssetAsync(uri);
                   setPhoto(uri);
                 }
@@ -197,7 +197,7 @@ const CreatePostsScreen = () => {
               activeOpacity={0.8}
               style={styles.btn}
               onPress={() => {
-                navigation.navigate("PostsScreen", { photo });
+                navigation.navigate("PostsScreen", { photo, dataFormPost });
                 // submitPostForm();
               }}
             >

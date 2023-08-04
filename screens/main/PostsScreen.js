@@ -5,12 +5,14 @@ import {
   View,
   ImageBackground,
   TextInput,
+  Image,
   TouchableOpacity,
   Platform,
   KeyboardAvoidingView,
   Keyboard,
   TouchableWithoutFeedback,
   Dimensions,
+  FlatList,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -21,48 +23,42 @@ import { useNavigation } from "@react-navigation/native";
 const d = Dimensions.get("window");
 
 const PostsScreen = ({ route }) => {
+  const [postsList, setPostsList] = useState("");
   const navigation = useNavigation();
   console.log(route.params);
-  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
-  // const [dataFormLogin, setDataFormLogin] = useState(initialState);
-  // const [isSecureEntry, setIsSecureEntry] = useState(true);
 
   const [dimensions, setdimensions] = useState(Dimensions.get("window").width);
-  const [marginAdapt, setMarginAdapt] = useState(0);
 
-  // const submitLoginForm = () => {
-  //   Keyboard.dismiss();
-  //   console.log(dataFormLogin);
-  //   setDataFormLogin(initialState);
-  // };
+  // const [marginAdapt, setMarginAdapt] = useState(0);
+  // const [isShowKeyboard, setIsShowKeyboard] = useState(false);
 
-  // const keyboardShowListener = Keyboard.addListener("keyboardDidShow", () => {
-  //   setMarginAdapt(-225);
-  // });
-  // const keyboardHideListener = Keyboard.addListener("keyboardDidHide", () => {
-  //   setMarginAdapt(0);
-  // });
-  // useEffect(() => {
-  //   const onChange = () => {
-  //     const width = Dimensions.get("window").width - 20 * 2;
-  //     setdimensions(width);
-  //   };
-  //   Dimensions.addEventListener("change", onChange);
-  //   return () => {
-  //     Dimensions.removeEventListener("change", onChange);
-  //   };
-  // }, []);
-
-  // const keyboardHide = () => {
-  //   setIsShowKeyboard(false);
-  //   Keyboard.dismiss();
-  //   // console.log(dataFormLogin);
-  //   // setDataFormLogin(initialState);
-  // };
-
+  useEffect(() => {
+    if (route.params) {
+      setPostsList((prevState) => [...prevState, route.params]);
+    }
+  }, [route.params]);
+  console.log(postsList);
   return (
     <View style={styles.container}>
-      <Text style={styles.headerTitle}>PostsScreen</Text>
+      {/* <Text style={styles.headerTitle}>PostsScreen</Text> */}
+      <FlatList
+        data={postsList}
+        keyExtractor={(item, indx) => indx.toString()}
+        renderItem={({ item }) => (
+          <View
+            style={{
+              marginBottom: 10,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Image
+              source={{ uri: item.photo }}
+              style={{ width: 350, height: 200 }}
+            />
+          </View>
+        )}
+      />
     </View>
   );
 };
