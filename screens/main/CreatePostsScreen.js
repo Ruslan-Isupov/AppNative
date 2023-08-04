@@ -15,7 +15,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { Camera } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
-
+import * as Location from "expo-location";
 const initialState = {
   nameImg: "",
   location: "",
@@ -112,6 +112,7 @@ const CreatePostsScreen = () => {
                 if (cameraRef) {
                   const { uri } = await cameraRef.takePictureAsync();
                   await MediaLibrary.createAssetAsync(uri);
+                  const location = await Location.getCurrentPositionAsync();
                   setPhoto(uri);
                 }
               }}
@@ -197,8 +198,10 @@ const CreatePostsScreen = () => {
               activeOpacity={0.8}
               style={styles.btn}
               onPress={() => {
-                navigation.navigate("PostsScreen", { photo, dataFormPost });
-                // submitPostForm();
+                navigation.navigate("Home", { photo, dataFormPost });
+                // submitPostForm("");
+                // setPhoto("");
+                // setCameraRef("");
               }}
             >
               <Text style={styles.btnTitle}>Опублікувати</Text>

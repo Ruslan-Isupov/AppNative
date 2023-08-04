@@ -4,13 +4,12 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import RegistrationScreen from "./screens/auth/RegistrationScreen";
-import LoginScreen from "./screens/auth/LoginScreen";
+
 import PostsScreen from "./screens/main/PostsScreen";
 import CreatePostsScreen from "./screens/main/CreatePostsScreen";
-import CommentsScreen from "./screens/main/CommentsScreen";
+
 import ProfileScreen from "./screens/main/ProfileScreen";
-import Home from "./screens/main/Home";
-import MapScreen from "./screens/main/MapScreen";
+
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 // import { useNavigation } from "@react-navigation/native";
@@ -24,40 +23,13 @@ const checkPrivateRoute = (isAuth) => {
   if (!isAuth) {
     return (
       <AuthStack.Navigator
-        // initialRouteName="Login"
+        initialRouteName="Login"
         screenOptions={{ headerTitleAlign: "center" }}
       >
-        {/* <AuthStack.Navigator screenOptions={{ headerTitleAlign: "center" }}> */}
-        {/* <AuthStack.Screen
+        <AuthStack.Screen
           options={{ headerShown: false }}
           name="Registration"
           component={RegistrationScreen}
-        />
-        <AuthStack.Screen
-          options={{ headerShown: false }}
-          name="Login"
-          component={LoginScreen}
-        />
-        <AuthStack.Screen
-          options={{
-            title: "Публікації",
-          }}
-          name="Home"
-          component={Home}
-        />
-        <AuthStack.Screen
-          options={{
-            title: "Коментувати",
-          }}
-          name="CommentsScreen"
-          component={CommentsScreen}
-        /> */}
-        <AuthStack.Screen
-          options={{
-            title: "Вибрати локацію",
-          }}
-          name="MapScreen"
-          component={MapScreen}
         />
       </AuthStack.Navigator>
     );
