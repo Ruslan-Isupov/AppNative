@@ -38,7 +38,7 @@ const CreatePostsScreen = () => {
 
   useEffect(() => {
     (async () => {
-      const { status } = await Camera.requestPermissionsAsync();
+      const { status } = await Camera.requestCameraPermissionsAsync();
       await MediaLibrary.requestPermissionsAsync();
 
       setHasPermission(status === "granted");
@@ -79,6 +79,11 @@ const CreatePostsScreen = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
   };
+  const takePhoto = async () => {
+    const { uri } = await cameraRef.takePictureAsync();
+    // const location = await Location.getCurrentPositionAsync();
+    setPhoto(uri);
+  };
 
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
@@ -108,14 +113,16 @@ const CreatePostsScreen = () => {
                 alignItems: "center",
                 justifyContent: "center",
               }}
-              onPress={async () => {
-                if (cameraRef) {
-                  const { uri } = await cameraRef.takePictureAsync();
-                  await MediaLibrary.createAssetAsync(uri);
-                  const location = await Location.getCurrentPositionAsync();
-                  setPhoto(uri);
-                }
-              }}
+              onPress={takePhoto}
+              // {async () => {
+              //   if (cameraRef) {
+              //     const { uri } = await cameraRef.takePictureAsync();
+              //     await MediaLibrary.createAssetAsync(uri);
+              //     const location = await Location.getCurrentPositionAsync();
+              //     setPhoto(uri);
+              //     takePhoto;
+              //   }
+              // }}
             >
               <Image source={require("../../assets/images/addPicture.png")} />
             </TouchableOpacity>
@@ -185,7 +192,7 @@ const CreatePostsScreen = () => {
                   left: 2,
                 }}
                 onPress={() => {
-                  navigation.navigate("MapScreen");
+                  navigation.navigate("PostsScreen", { screen: "MapScreen" });
                 }}
               >
                 <Image
@@ -254,7 +261,7 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     borderColor: "#FFFFFF",
-    outline: "none",
+    // outline: "none",
     borderBottomWidth: 1.0,
     borderBottomColor: "red",
     height: 50,
@@ -322,9 +329,9 @@ const styles = StyleSheet.create({
     // alignItems: "center",
   },
   passwordCheck: {
-    color: "#1B4371",
-    fontFamily: "Roboto-Regular",
-    fontSize: 16,
+    tintColor: "#1B4371",
+    // fontFamily: "Roboto-Regular",
+    // fontSize: 16,
   },
 });
 

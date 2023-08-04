@@ -10,7 +10,7 @@ export default function App() {
     "Roboto-Regular": require("./assets/fonts/Roboto-Black.ttf"),
     "Roboto-Medium": require("./assets/fonts/Roboto-Medium.ttf"),
   });
-  const routing = checkPrivateRoute(true);
+  const routing = checkPrivateRoute(false);
   if (!fontsLoaded) return null;
   return <NavigationContainer>{routing}</NavigationContainer>;
 }

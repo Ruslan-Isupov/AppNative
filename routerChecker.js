@@ -4,10 +4,9 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import RegistrationScreen from "./screens/auth/RegistrationScreen";
-
+import LoginScreen from "./screens/auth/LoginScreen";
 import PostsScreen from "./screens/main/PostsScreen";
 import CreatePostsScreen from "./screens/main/CreatePostsScreen";
-
 import ProfileScreen from "./screens/main/ProfileScreen";
 
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -31,6 +30,11 @@ const checkPrivateRoute = (isAuth) => {
           name="Registration"
           component={RegistrationScreen}
         />
+        <AuthStack.Screen
+          options={{ headerShown: false }}
+          name="Login"
+          component={LoginScreen}
+        />
       </AuthStack.Navigator>
     );
   }
@@ -39,6 +43,27 @@ const checkPrivateRoute = (isAuth) => {
       //   tabBarOptions={{ showLabel: false }}
 
       screenOptions={({ route }) => ({
+        tabBarActiveTintColor:
+          iconName === "add-outline" ? "#FFFFFF" : "#FF6C00",
+        tabBarInactiveTintColor: "#212121CC",
+        tabBarShowLabel: false,
+        tabBarStyle: [
+          {
+            left: 0,
+            right: 0,
+          },
+        ],
+        // labelStyle: {
+        //   margin: 0,
+        //   padding: 0,
+        // },
+        // tabStyle: {
+        //   paddingLeft: 0,
+        //   paddingRight: 0,
+
+        //   margin: 0,
+        // },
+
         // tabBarItemStyle: { width: "auto" },
         // tabBarStyle: { padding: 0 },
         // safeAreaInsets={{ left: 0, right: 0 }}
@@ -88,22 +113,22 @@ const checkPrivateRoute = (isAuth) => {
           }
         },
       })}
-      tabBarOptions={{
-        activeTintColor: iconName === "add-outline" ? "#FFFFFF" : "#FF6C00",
-        inactiveTintColor: "#212121CC",
-        showLabel: false,
-        safeAreaInsets: { left: 0, right: 0 },
-        // labelStyle: {
-        //   margin: 0,
-        //   padding: 0,
-        // },
-        // tabStyle: {
-        //   paddingLeft: 0,
-        //   paddingRight: 0,
+      // tabBarOptions={{
+      //   activeTintColor: iconName === "add-outline" ? "#FFFFFF" : "#FF6C00",
+      //   inactiveTintColor: "#212121CC",
+      //   showLabel: false,
+      //   safeAreaInsets: { left: 0, right: 0 },
+      // labelStyle: {
+      //   margin: 0,
+      //   padding: 0,
+      // },
+      // tabStyle: {
+      //   paddingLeft: 0,
+      //   paddingRight: 0,
 
-        //   margin: 0,
-        // },
-      }}
+      //   margin: 0,
+      // },
+      // }}
     >
       <MainTabs.Screen
         name="PostsScreen"

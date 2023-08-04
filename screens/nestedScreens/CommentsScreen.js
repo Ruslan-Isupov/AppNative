@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
-  Text,
   View,
-  ImageBackground,
   TextInput,
   TouchableOpacity,
   Platform,
@@ -11,7 +9,6 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   Dimensions,
-  Button,
   Image,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";

@@ -174,7 +174,7 @@ const RegistrationScreen = () => {
                 // onPress={keyboardHide}
                 // onPress={submitLoginForm}
                 onPress={() => {
-                  navigation.navigate("Home");
+                  navigation.navigate("PostsScreen");
                 }}
               >
                 <Text style={styles.btnTitle}>Зареєструватися</Text>

@@ -1,25 +1,7 @@
 import React, { useState, useEffect } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  ImageBackground,
-  TextInput,
-  Image,
-  TouchableOpacity,
-  Platform,
-  KeyboardAvoidingView,
-  Keyboard,
-  TouchableWithoutFeedback,
-  Dimensions,
-  FlatList,
-} from "react-native";
+import { StyleSheet, View, Image, Dimensions, FlatList } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-// const initialState = {
-//   email: "",
-//   password: "",
-// };
 const d = Dimensions.get("window");
 
 const Home = ({ route }) => {

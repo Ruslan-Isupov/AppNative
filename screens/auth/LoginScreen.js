@@ -137,7 +137,8 @@ const LoginScreen = () => {
                 //   submitLoginForm();
                 // }}
                 onPress={() => {
-                  navigation.navigate("Home");
+                  navigation.navigate("PostsScreen");
+                  // ("PostsScreen");
                 }}
               >
                 <Text style={styles.btnTitle}>Увійти</Text>

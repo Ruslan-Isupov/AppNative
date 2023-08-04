@@ -31,12 +31,18 @@ const MapScreen = () => {
           flex: 1,
         }}
         showUserLocation={true}
-        // initialRegion={{
-        //   latitude: 50.450001,
-        //   longitude: 30.5234,
-        // }}
+        initialRegion={{
+          latitude: 50.450001,
+          longitude: 30.5234,
+          latitudeDelta: 0.1,
+          longitudeDelta: 0.1,
+        }}
         zoomEnabled={true}
       ></MapView>
+      <Marker
+        coordinate={{ latitude: 50.450001, longitude: 30.5234 }}
+        title="I am here"
+      />
     </View>
   );
 };
