@@ -1,5 +1,7 @@
 import "react-native-gesture-handler";
-
+import { useSelector } from "react-redux";
+import { authSignOutUser } from "./redux/auth/authOperations";
+import { useDispatch } from "react-redux";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
@@ -11,14 +13,19 @@ import ProfileScreen from "./screens/main/ProfileScreen";
 
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-// import { useNavigation } from "@react-navigation/native";
-// const navigation = useNavigation();
 import { TouchableOpacity, Image } from "react-native";
-// import { AntDesign } from "@expo/vector-icons";
 const AuthStack = createStackNavigator();
 const MainTabs = createBottomTabNavigator();
+
 let iconName = "";
+
 const checkPrivateRoute = (isAuth) => {
+  const dispatch = useDispatch();
+
+  const signOut = () => {
+    dispatch(authSignOutUser());
+  };
+
   if (!isAuth) {
     return (
       <AuthStack.Navigator
@@ -40,8 +47,6 @@ const checkPrivateRoute = (isAuth) => {
   }
   return (
     <MainTabs.Navigator
-      //   tabBarOptions={{ showLabel: false }}
-
       screenOptions={({ route }) => ({
         tabBarActiveTintColor:
           iconName === "add-outline" ? "#FFFFFF" : "#FF6C00",
@@ -53,20 +58,7 @@ const checkPrivateRoute = (isAuth) => {
             right: 0,
           },
         ],
-        // labelStyle: {
-        //   margin: 0,
-        //   padding: 0,
-        // },
-        // tabStyle: {
-        //   paddingLeft: 0,
-        //   paddingRight: 0,
 
-        //   margin: 0,
-        // },
-
-        // tabBarItemStyle: { width: "auto" },
-        // tabBarStyle: { padding: 0 },
-        // safeAreaInsets={{ left: 0, right: 0 }}
         headerTitleAlign: "center",
         tabBarIcon: ({ focused, color, size, styles }) => {
           let iconName;
@@ -76,7 +68,6 @@ const checkPrivateRoute = (isAuth) => {
           } else if (route.name === "CreatePostsScreen") {
             iconName = "add-outline";
             color = "#FFFFFF";
-            //   styles = style={{backgroundColor:"orange"}}
           } else if (route.name === "ProfileScreen") {
             iconName = "person-outline";
           }
@@ -113,38 +104,12 @@ const checkPrivateRoute = (isAuth) => {
           }
         },
       })}
-      // tabBarOptions={{
-      //   activeTintColor: iconName === "add-outline" ? "#FFFFFF" : "#FF6C00",
-      //   inactiveTintColor: "#212121CC",
-      //   showLabel: false,
-      //   safeAreaInsets: { left: 0, right: 0 },
-      // labelStyle: {
-      //   margin: 0,
-      //   padding: 0,
-      // },
-      // tabStyle: {
-      //   paddingLeft: 0,
-      //   paddingRight: 0,
-
-      //   margin: 0,
-      // },
-      // }}
     >
       <MainTabs.Screen
         name="PostsScreen"
         component={PostsScreen}
         options={{
-          headerRight: () => (
-            <TouchableOpacity
-              style={{
-                marginRight: 5,
-                alignSelf: "center",
-              }}
-              // onPress={() => navigation.getParam("logout")}
-            >
-              <Image source={require("./assets/images/logOut.png")} />
-            </TouchableOpacity>
-          ),
+          headerShown: false,
         }}
       />
       <MainTabs.Screen
@@ -153,15 +118,6 @@ const checkPrivateRoute = (isAuth) => {
         options={{
           title: "Cтворити публікації",
         }}
-
-        // options={({ navigation }) => ({
-        //   tabBarButton: (props) => (
-        //     <TouchableOpacity
-        //       {...props}
-        //       onPress={() => navigation.navigate("CreatePostsScreen")}
-        //     />
-        //   ),
-        // })}
       />
       <MainTabs.Screen
         name="ProfileScreen"

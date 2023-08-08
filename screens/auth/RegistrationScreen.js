@@ -1,3 +1,6 @@
+import { useDispatch } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
+
 import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
@@ -15,14 +18,15 @@ import {
   Button,
 } from "react-native";
 
-import { useNavigation } from "@react-navigation/native";
 // import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 // import { Ionicons } from "@expo/vector-icons";
 
+import { registerDB } from "../../redux/auth/authOperations";
+
 const initialState = {
-  username: "",
   email: "",
   password: "",
+  nickname: "",
 };
 const d = Dimensions.get("window");
 const RegistrationScreen = () => {
@@ -41,6 +45,7 @@ const RegistrationScreen = () => {
   const keyboardHideListener = Keyboard.addListener("keyboardDidHide", () => {
     setMarginAdapt(0);
   });
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const onChange = () => {
@@ -58,9 +63,11 @@ const RegistrationScreen = () => {
     Keyboard.dismiss();
   };
   const submitRegisterForm = () => {
+    setIsShowKeyboard(false);
     Keyboard.dismiss();
-    console.log(dataFormRegistration);
+    dispatch(registerDB(dataFormRegistration));
     setDataFormRegistration(initialState);
+    // console.log(4);
   };
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
@@ -100,13 +107,13 @@ const RegistrationScreen = () => {
                   name="hola"
                   textAlign={"left"}
                   onFocus={() => setIsShowKeyboard(true)}
-                  value={dataFormRegistration.username}
+                  value={dataFormRegistration.nickname}
                   placeholder={"Логін"}
                   // onChange={(nativeEvent) => console.log("Hi")}
                   onChangeText={(value) =>
                     setDataFormRegistration((prevState) => ({
                       ...prevState,
-                      username: value,
+                      nickname: value,
                     }))
                   }
                 />
@@ -173,9 +180,10 @@ const RegistrationScreen = () => {
                 style={styles.btn}
                 // onPress={keyboardHide}
                 // onPress={submitLoginForm}
-                onPress={() => {
-                  navigation.navigate("PostsScreen");
-                }}
+                onPress={
+                  submitRegisterForm
+                  // navigation.navigate("PostsScreen");
+                }
               >
                 <Text style={styles.btnTitle}>Зареєструватися</Text>
               </TouchableOpacity>

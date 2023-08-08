@@ -51,28 +51,6 @@ const ProfileScreen = () => {
           </Text>
           <PostsItem />
         </View>
-        {/* <FlatList
-        // data={DATA}
-        renderItem={renderItem}
-        // keyExtractor={(item) => item.id}
-        // extraData={selectedId}
-      /> */}
-        {/* <FlatList
-        // data={DATA}
-        // renderItem={({ item }) => <PostsItem />}
-        renderItem={({ item, index }) => {
-          return (
-            <ListItem
-              // data={this.state.data}
-              // key={(item, index) => index.toString()}
-              renderItem={({ item }) => <PostsItem item={item} />}
-            />
-          );
-        }}
-        // renderItem={PostsItem}
-        // keyExtractor={(item) => item.id}
-        // extraData={selectedId}
-      /> */}
       </ImageBackground>
     </View>
   );

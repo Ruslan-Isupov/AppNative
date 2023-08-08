@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+
 import {
   StyleSheet,
   Text,
@@ -14,6 +17,7 @@ import {
   Button,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { loginDB } from "../../redux/auth/authOperations";
 
 const initialState = {
   email: "",
@@ -24,6 +28,8 @@ const d = Dimensions.get("window");
 const LoginScreen = () => {
   const navigation = useNavigation();
 
+  const dispatch = useDispatch();
+
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [dataFormLogin, setDataFormLogin] = useState(initialState);
   const [isSecureEntry, setIsSecureEntry] = useState(true);
@@ -32,8 +38,9 @@ const LoginScreen = () => {
   const [marginAdapt, setMarginAdapt] = useState(0);
 
   const submitLoginForm = () => {
+    setIsShowKeyboard(false);
     Keyboard.dismiss();
-    console.log(dataFormLogin);
+    dispatch(loginDB(dataFormLogin));
     setDataFormLogin(initialState);
   };
 
@@ -57,8 +64,6 @@ const LoginScreen = () => {
   const keyboardHide = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
-    // console.log(dataFormLogin);
-    // setDataFormLogin(initialState);
   };
 
   return (
@@ -132,26 +137,14 @@ const LoginScreen = () => {
               <TouchableOpacity
                 activeOpacity={0.8}
                 style={styles.btn}
-                // onPress={() => {
-                //   navigation.navigate("Registration");
-                //   submitLoginForm();
-                // }}
                 onPress={() => {
-                  navigation.navigate("PostsScreen");
-                  // ("PostsScreen");
+                  submitLoginForm();
                 }}
               >
                 <Text style={styles.btnTitle}>Увійти</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity
-                activeOpacity={0.9}
-                style={styles.boxAdvice}
-
-                // onPress={() => {
-                //   navigation.navigate("Registration");
-                // }}
-              >
+              <TouchableOpacity activeOpacity={0.9} style={styles.boxAdvice}>
                 <Text style={styles.headerAdvice}>
                   Немає акаунту?
                   <Text

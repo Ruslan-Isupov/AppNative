@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import {
   StyleSheet,
   Text,
@@ -16,25 +17,45 @@ import { useNavigation } from "@react-navigation/native";
 import { Camera } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 import * as Location from "expo-location";
-const initialState = {
-  nameImg: "",
-  location: "",
-};
-const d = Dimensions.get("window");
+import { db, storage } from "../../firebase/config";
+import { ref as sRef } from "firebase/storage";
 
+const defaultLocation = {
+  latitude: 50.516339,
+  longitude: 30.602185,
+  latitudeDelta: 0.001,
+  longitudeDelta: 0.006,
+};
+// import { ref } from "firebase/storage";
+
+// import { collection, addDoc } from "firebase/firestore";
+
+// import { storage } from "../../firebase/config";
+import { getDatabase, set, ref } from "firebase/database";
+import {
+  uploadBytes,
+  // uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
+
+const d = Dimensions.get("window");
+const metadata = {
+  contentType: "image/jpeg",
+};
 const CreatePostsScreen = () => {
   const navigation = useNavigation();
 
-  // const [type, setType] = useState(Camera.Constants.Type.back);
   const [hasPermission, setHasPermission] = useState(null);
-  const [cameraRef, setCameraRef] = useState(null);
-  const [photo, setPhoto] = useState(null);
-
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [dimensions, setdimensions] = useState(Dimensions.get("window").width);
   const [marginAdapt, setMarginAdapt] = useState(0);
 
-  const [dataFormPost, setDataFormPost] = useState(initialState);
+  const [cameraRef, setCameraRef] = useState(null);
+  const [photo, setPhoto] = useState(null);
+  const [comment, setComment] = useState("");
+  const [location, setLocation] = useState(null);
+
+  const { userId, nickName } = useSelector((state) => state.auth);
 
   useEffect(() => {
     (async () => {
@@ -44,19 +65,6 @@ const CreatePostsScreen = () => {
       setHasPermission(status === "granted");
     })();
   }, []);
-
-  // if (hasPermission === null) {
-  //   return <View />;
-  // }
-  // if (hasPermission === false) {
-  //   return <Text>No access to camera</Text>;
-  // }
-
-  const submitPostForm = () => {
-    Keyboard.dismiss();
-    console.log(dataFormPost);
-    setDataFormPost(initialState);
-  };
 
   const keyboardShowListener = Keyboard.addListener("keyboardDidShow", () => {
     setMarginAdapt(-225);
@@ -74,15 +82,77 @@ const CreatePostsScreen = () => {
       Dimensions.removeEventListener("change", onChange);
     };
   }, []);
-
   const keyboardHide = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
   };
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission to access location was denied");
+      }
+
+      let locationRes = await Location.getCurrentPositionAsync({});
+      setLocation(locationRes);
+    })();
+  }, []);
+
+  const uploadPhotoToServer = async () => {
+    const uniquePostId = Date.now().toString();
+
+    const photoRef = sRef(storage, `postImage/${uniquePostId}`);
+    // const photoRef = ref(storage, `postImage/${uniquePostId}`);
+
+    const blob = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function () {
+        resolve(xhr.response);
+      };
+      xhr.onerror = function (e) {
+        // console.log(e);
+        reject(new TypeError("Network request failed"));
+      };
+      xhr.responseType = "blob";
+      xhr.open("GET", photo, true);
+      xhr.send(null);
+    });
+    await uploadBytes(photoRef, blob, metadata);
+
+    const processedPhoto = await getDownloadURL(photoRef);
+    return processedPhoto;
+  };
+
   const takePhoto = async () => {
     const { uri } = await cameraRef.takePictureAsync();
-    // const location = await Location.getCurrentPositionAsync();
+
     setPhoto(uri);
+  };
+  const uploadPostToServer = async () => {
+    const photo = await uploadPhotoToServer();
+    // console.log(location);
+
+    const uniquePostId = Date.now().toString();
+
+    const data = getDatabase();
+    // await set(ref(data, "posts/" + userId)),
+
+    await set(ref(data, "posts/" + uniquePostId), {
+      photo,
+      comment,
+      location: location ? location.coords : defaultLocation,
+      userId,
+      nickName,
+      id: uniquePostId,
+    });
+  };
+
+  const sendPhoto = () => {
+    const image = photo;
+    uploadPostToServer();
+    // uploadPhotoToServer();
+    navigation.navigate("Публікації", { image, comment, location });
   };
 
   return (
@@ -114,15 +184,6 @@ const CreatePostsScreen = () => {
                 justifyContent: "center",
               }}
               onPress={takePhoto}
-              // {async () => {
-              //   if (cameraRef) {
-              //     const { uri } = await cameraRef.takePictureAsync();
-              //     await MediaLibrary.createAssetAsync(uri);
-              //     const location = await Location.getCurrentPositionAsync();
-              //     setPhoto(uri);
-              //     takePhoto;
-              //   }
-              // }}
             >
               <Image source={require("../../assets/images/addPicture.png")} />
             </TouchableOpacity>
@@ -149,15 +210,9 @@ const CreatePostsScreen = () => {
                 name="hola"
                 textAlign={"left"}
                 onFocus={() => setIsShowKeyboard(true)}
-                value={dataFormPost.nameImg}
+                value={comment}
                 placeholder={"Назва..."}
-                // onChange={(nativeEvent) => console.log("LoginScreen")}
-                onChangeText={(value) =>
-                  setDataFormPost((prevState) => ({
-                    ...prevState,
-                    nameImg: value,
-                  }))
-                }
+                onChangeText={setComment}
               />
             </View>
             <View
@@ -176,14 +231,10 @@ const CreatePostsScreen = () => {
                 }}
                 textAlign={"left"}
                 onFocus={() => setIsShowKeyboard(true)}
-                value={setDataFormPost.location}
+                // value={location ? location : "Kyiv"}
+                value={location}
                 placeholder={"Місцевість..."}
-                onChangeText={(value) =>
-                  setDataFormPost((prevState) => ({
-                    ...prevState,
-                    location: value,
-                  }))
-                }
+                onChangeText={setLocation}
               />
               <TouchableOpacity
                 style={{
@@ -204,12 +255,14 @@ const CreatePostsScreen = () => {
             <TouchableOpacity
               activeOpacity={0.8}
               style={styles.btn}
-              onPress={() => {
-                navigation.navigate("Home", { photo, dataFormPost });
+              onPress={
+                sendPhoto
+                // navigation.navigate("Home", { photo, dataFormPost });
                 // submitPostForm("");
                 // setPhoto("");
                 // setCameraRef("");
-              }}
+                // uploadPhotoToServer();
+              }
             >
               <Text style={styles.btnTitle}>Опублікувати</Text>
             </TouchableOpacity>

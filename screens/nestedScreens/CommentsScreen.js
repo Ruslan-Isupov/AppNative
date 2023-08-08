@@ -10,33 +10,83 @@ import {
   TouchableWithoutFeedback,
   Dimensions,
   Image,
+  Text,
+  SafeAreaView,
+  FlatList,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+
+import { getDatabase, ref, set, push, onValue } from "firebase/database";
 
 import Comment from "../../components/Comment";
-const initialState = {
-  comment: "",
-};
+import { takeComment } from "../../redux/auth/authOperations";
 const d = Dimensions.get("window");
 
-const CommentsScreen = () => {
+const CommentsScreen = ({ route }) => {
+  const [view, setView] = useState("");
+
+  const { postId } = route.params;
+  const [posts, setPosts] = useState("");
   const navigation = useNavigation();
-
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
-  const [dataFormComment, setDataFormComment] = useState(initialState);
   const [isSecureEntry, setIsSecureEntry] = useState(true);
-
   const [dimensions, setdimensions] = useState(Dimensions.get("window").width);
   const [marginAdapt, setMarginAdapt] = useState(0);
 
-  const submitLoginForm = () => {
+  const submitComment = () => {
     Keyboard.dismiss();
-    console.log(dataFormLogin);
-    setDataFormLogin(initialState);
+    // console.log(e);
+  };
+
+  const dispatch = useDispatch();
+  const { nickName, comment } = useSelector((state) => state.auth);
+
+  // Це працю'
+  useEffect(() => {
+    if (view) {
+      takeComment(view);
+    }
+  }, [view]);
+
+  useEffect(() => {
+    getAllPosts();
+  }, []);
+
+  const getAllPosts = async () => {
+    const data = getDatabase();
+    const starCountRef = ref(data, `posts/${postId}/comments`);
+    onValue(starCountRef, async (snapshot) => {
+      const dataBase = await snapshot.val();
+      console.log(Object.values(dataBase));
+      setPosts(Object.values(dataBase));
+    });
+  };
+
+  // const getAllPosts = async () => {
+  //   db.firestore()
+  //     .collection("posts")
+  //     .doc(postId)
+  //     .collection("comments")
+  //     .onSnapshot((data) =>
+  //       setAllComments(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
+  //     );
+  // };
+
+  const createPost = async () => {
+    const database = getDatabase();
+    const postListRef = ref(database, `posts/${postId}/comments`, +postId);
+    const newPostRef = push(postListRef);
+    console.log(comment);
+    set(newPostRef, {
+      nickName: nickName,
+      comment: view ? view : "Awesome",
+    });
   };
 
   const keyboardShowListener = Keyboard.addListener("keyboardDidShow", () => {
-    setMarginAdapt(-225);
+    setMarginAdapt(-2);
   });
   const keyboardHideListener = Keyboard.addListener("keyboardDidHide", () => {
     setMarginAdapt(0);
@@ -55,14 +105,14 @@ const CommentsScreen = () => {
   const keyboardHide = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
-    // console.log(dataFormLogin);
-    // setDataFormLogin(initialState);
   };
 
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <View style={styles.container}>
         <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" : ""}>
+          {/* <SafeAreaView style={styles.container}> */}
+
           <View
             style={{
               ...styles.form,
@@ -71,11 +121,6 @@ const CommentsScreen = () => {
               marginBottom: marginAdapt,
             }}
           >
-            {/* <PostsItem
-            style={{
-              alignSelf: "center",
-            }}
-            /> */}
             <View style={styles.postBox}>
               <Image
                 style={{
@@ -85,25 +130,68 @@ const CommentsScreen = () => {
                 source={require("../../assets/images/dawn.png")}
               />
             </View>
-            <View>
-              <Comment />
-            </View>
-
+            {/* Закінчився бекграунд */}
+            <FlatList
+              data={posts}
+              renderItem={({ item }) => (
+                <View>
+                  {/* <Comment /> */}
+                  <View style={styles.container}>
+                    <View style={styles.commentWrapper}>
+                      <View style={styles.boxComment}>
+                        <Text
+                          style={{
+                            fontFamily: "Roboto-Medium",
+                            fontSize: 13,
+                            color: "#212121",
+                            marginTop: 8,
+                          }}
+                        >
+                          {item.comment}
+                        </Text>
+                        <Text
+                          style={{
+                            fontFamily: "Roboto-Medium",
+                            fontSize: 10,
+                            color: "#BDBDBD",
+                            marginTop: 8,
+                            //   textAlign: "right",
+                          }}
+                        >
+                          09 червня, 2020 | 08:40
+                        </Text>
+                      </View>
+                      <Image
+                        style={{
+                          borderRadius: 8,
+                          width: 28,
+                          // position: "absolute",
+                        }}
+                        source={require("../../assets/images/user.png")}
+                      />
+                    </View>
+                  </View>
+                </View>
+                // {/* Закінчились коменти */}
+              )}
+              keyExtractor={(item, indx) => {
+                // item.id;
+                indx.toString();
+              }}
+            />
+            {/* // </SafeAreaView> */}
+            {/* // Інпуь відправляти */}
             <View
             // style={{ marginTop: 16 }}
             >
               <TextInput
+                name={"comment"}
                 style={styles.input}
                 textAlign={"left"}
                 onFocus={() => setIsShowKeyboard(true)}
-                value={dataFormComment.comment}
+                value={view}
                 placeholder={"Коментувати..."}
-                onChangeText={(value) =>
-                  setDataFormComment((prevState) => ({
-                    ...prevState,
-                    comment: value,
-                  }))
-                }
+                onChangeText={setView}
               />
               <TouchableOpacity
                 style={{
@@ -111,12 +199,10 @@ const CommentsScreen = () => {
                   top: 40,
                   right: 33,
                 }}
-                // onPress={() => {
-                //   setIsSecureEntry((prev) => !prev);
-                // }}
+                onPress={createPost}
               >
                 <Image
-                  style={styles.passwordCheck}
+                  // style={styles.passwordCheck}
                   source={require("../../assets/images/send.png")}
                 />
               </TouchableOpacity>
@@ -136,7 +222,7 @@ const styles = StyleSheet.create({
   postBox: {
     // flexDirection: "row",
     // alignItems: "center",
-    marginTop: 32,
+    // marginTop: 15,
     alignSelf: "center",
   },
 
@@ -203,12 +289,11 @@ const styles = StyleSheet.create({
     marginTop: 32,
   },
   headerAdvice: {
-    // width: 252,
-    // height: 19,
     marginRight: 4,
 
     color: "#1B4371",
   },
+
   boxAdvice: {
     flex: 1,
     flexDirection: "row",
@@ -217,10 +302,25 @@ const styles = StyleSheet.create({
     // width: 159,
     // alignItems: "center",
   },
-  passwordCheck: {
-    color: "#1B4371",
-    fontFamily: "Roboto-Regular",
-    fontSize: 16,
+
+  commentWrapper: {
+    width: 343,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    // alignItems: "center",
+    marginTop: 32,
+  },
+  postDescription: {
+    flex: 1,
+    flexDirection: "row",
+    // marginLeft: 8,
+    marginTop: 8,
+    justifyContent: "space-between",
+  },
+  boxComment: {
+    backgroundColor: "#00000008",
+    padding: 16,
+    width: 300,
   },
 });
 

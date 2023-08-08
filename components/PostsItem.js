@@ -1,14 +1,23 @@
 import React from "react";
+import { useState } from "react";
 
-import { View, Text, StyleSheet, Image, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
 
-const PostsItem = () => {
+const PostsItem = ({ route }) => {
   const navigation = useNavigation();
-
+  // const { postId } = route.params;
+  const [comment, setComment] = useState("");
   return (
     <View style={styles.container}>
       <View style={styles.postBox}>
@@ -31,11 +40,13 @@ const PostsItem = () => {
         </Text>
         <View style={styles.postDescription}>
           <View style={styles.postActivity}>
-            <View style={styles.commentsBox}>
-              {/* <Image
-              stele={{ borderRadius: 8 }}
-              source={require("../assets/images/postImg.jpg")}
-            /> */}
+            <TouchableOpacity
+              activeOpacity={0.9}
+              style={styles.commentsBox}
+              onPress={() => {
+                navigation.navigate("Коментарі");
+              }}
+            >
               <Ionicons
                 name={"chatbubble-outline"}
                 size={24}
@@ -47,13 +58,13 @@ const PostsItem = () => {
                   fontSize: 16,
                   color: "#212121",
                 }}
-                onPress={() => {
-                  navigation.navigate("CommentScreen");
-                }}
+                // onPress={() => {
+                //   navigation.navigate("CommentScreen");
+                // }}
               >
                 0
               </Text>
-            </View>
+            </TouchableOpacity>
 
             <View style={styles.likesBox}>
               <Ionicons

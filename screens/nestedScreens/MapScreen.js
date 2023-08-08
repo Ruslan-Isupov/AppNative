@@ -4,25 +4,27 @@ import { useNavigation } from "@react-navigation/native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 
-const MapScreen = () => {
+const MapScreen = ({ route }) => {
   const navigation = useNavigation();
-  const [location, setLocation] = useState(null);
+  const { longitude, latitude } = route.params.location;
 
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestPermissionsAsync();
-      if (status !== "granted") {
-        console.log("Permission to access location was denied");
-      }
+  console.log(route.params.location);
 
-      let location = await Location.getCurrentPositionAsync({});
-      const coords = {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      };
-      setLocation(coords);
-    })();
-  }, []);
+  // useEffect(() => {
+  //   (async () => {
+  //     let { status } = await Location.requestPermissionsAsync();
+  //     if (status !== "granted") {
+  //       console.log("Permission to access location was denied");
+  //     }
+
+  //     let location = await Location.getCurrentPositionAsync({});
+  //     const coords = {
+  //       latitude: location.coords.latitude,
+  //       longitude: location.coords.longitude,
+  //     };
+  //     setLocation(coords);
+  //   })();
+  // }, []);
 
   return (
     <View style={styles.container}>
@@ -32,17 +34,14 @@ const MapScreen = () => {
         }}
         showUserLocation={true}
         initialRegion={{
-          latitude: 50.450001,
-          longitude: 30.5234,
-          latitudeDelta: 0.1,
-          longitudeDelta: 0.1,
+          latitude,
+          longitude,
+          latitudeDelta: 0.001,
+          longitudeDelta: 0.006,
         }}
         zoomEnabled={true}
       ></MapView>
-      <Marker
-        coordinate={{ latitude: 50.450001, longitude: 30.5234 }}
-        title="I am here"
-      />
+      <Marker coordinate={{ latitude, longitude }} title="I am here" />
     </View>
   );
 };
