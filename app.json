@@ -2,7 +2,6 @@
   "expo": {
     "name": "AwesomeProject",
     "slug": "AwesomeProject",
-  
     "version": "1.0.0",
     "orientation": "default",
     "icon": "./assets/icon.png",
@@ -19,14 +18,19 @@
       "supportsTablet": true
     },
     "android": {
-   
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.samoed.AwesomeProject"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "2c9c1a38-7fcb-4d9d-9446-f90bbf622e0a"
+      }
     }
   }
 }
